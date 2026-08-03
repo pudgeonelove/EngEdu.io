@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     initTabs();
-    initMap();
+    initDetailedRoadmap();
     initMicrophone();
-    initGoogleMock();
 });
 
-// 1. Переключение вкладок
+// 1. Управление вкладками
 function initTabs() {
     const topTabs = document.querySelectorAll('.tab-btn');
     const bottomTabs = document.querySelectorAll('.bottom-btn');
@@ -13,8 +12,7 @@ function initTabs() {
 
     function switchTab(targetId) {
         contents.forEach(c => c.classList.remove('active'));
-        const targetContent = document.getElementById(targetId);
-        targetContent.classList.add('active');
+        document.getElementById(targetId).classList.add('active');
 
         [...topTabs, ...bottomTabs].forEach(btn => {
             btn.classList.remove('active');
@@ -22,78 +20,98 @@ function initTabs() {
                 btn.classList.add('active');
             }
         });
-
-        if(targetId === 'tab-adventure') {
-            setTimeout(scrollToCurrentLevel, 100); 
-        }
     }
 
     topTabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.target)));
     bottomTabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.target)));
 }
 
-// 2. Генерация карты
-function initMap() {
-    const mapContainer = document.getElementById('map-container');
-    const levelsCount = 15;
-    const currentLevelIndex = 6; 
+// 2. Генерация детальной программы (Roadmap)
+function initDetailedRoadmap() {
+    const container = document.getElementById('roadmap-container');
     
-    const themes = ["База", "Глаголы", "Еда", "Семья", "Путешествия", "Бизнес"];
+    // Очень подробная программа с абсолютного нуля
+    const curriculum = [
+        { title: "Алфавит", desc: "Буквы и их правильное произношение." },
+        { title: "Гласные звуки", desc: "Короткие и долгие гласные, транскрипция." },
+        { title: "Согласные звуки", desc: "Особые звуки: [θ], [ð], [ŋ]." },
+        { title: "Правила чтения", desc: "Открытый и закрытый слог." },
+        { title: "Приветствия", desc: "Hello, Hi, How are you? и ответы на них." },
+        { title: "Личные местоимения", desc: "I, you, he, she, it, we, they." },
+        { title: "Глагол 'To Be' (Утверждение)", desc: "Фундамент: I am, He is, They are." },
+        { title: "Глагол 'To Be' (Отрицание)", desc: "Формирование частицы NOT." },
+        { title: "Глагол 'To Be' (Вопрос)", desc: "Порядок слов в вопросительных предложениях." },
+        { title: "Артикли A / An", desc: "Неопределенный артикль и существительные." },
+        { title: "Множественное число", desc: "Окончания -s, -es и исключения." },
+        { title: "Указательные местоимения", desc: "This/That, These/Those." },
+        { title: "Притяжательные местоимения", desc: "My, your, his, her, our, their." },
+        { title: "Цвета и числа", desc: "Базовый словарный запас (0-100, цвета)." },
+        { title: "Present Simple (Введение)", desc: "Настоящее простое время: правила и смысл." },
+        { title: "Present Simple (Глаголы)", desc: "Окончания -s и -es у глаголов (he/she/it)." },
+        { title: "Предлоги места", desc: "In, on, at, under, behind." },
+        { title: "Семья и родственники", desc: "Mother, father, sibling, cousin." },
+        { title: "Present Simple (Do/Does)", desc: "Отрицания и вопросы в простом времени." },
+        { title: "Артикль The", desc: "Когда использовать определенный артикль." },
+        { title: "Модальный глагол Can", desc: "Выражение физической способности." }
+    ];
 
-    for(let i = 1; i <= levelsCount; i++) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'level-wrapper';
+    // Пользователь начинает с полного нуля (ни одного пройденного)
+    const currentProgress = 0; 
 
-        const node = document.createElement('div');
-        node.className = 'level-node';
+    curriculum.forEach((lesson, index) => {
+        const div = document.createElement('div');
+        div.className = 'roadmap-module';
         
-        if (i < currentLevelIndex) node.classList.add('completed');
-        else if (i === currentLevelIndex) {
-            node.classList.add('current');
-            node.id = 'current-level';
+        if (index < currentProgress) {
+            div.classList.add('completed');
+        } else if (index === currentProgress) {
+            div.classList.add('current');
+            div.id = 'current-lesson';
         } else {
-            node.classList.add('locked');
+            div.classList.add('locked');
         }
 
-        const themeIndex = Math.floor((i-1) / 3) % themes.length;
+        const statusIcon = index < currentProgress ? '<i class="fa-solid fa-check" style="color: var(--success)"></i>' : (index === currentProgress ? '<i class="fa-solid fa-lock-open"></i>' : '<i class="fa-solid fa-lock"></i>');
+
+        div.innerHTML = `
+            <div class="module-header">
+                <span class="module-number">Урок ${index + 1}</span>
+                <span>${statusIcon}</span>
+            </div>
+            <div class="module-title">${lesson.title}</div>
+            <div class="module-desc">${lesson.desc}</div>
+        `;
         
-        if(i < currentLevelIndex) {
-            node.innerHTML = `<i class="fa-solid fa-check"></i>`;
-        } else {
-            node.innerHTML = `
-                <span>${i}</span>
-                <span class="level-theme">${themes[themeIndex]}</span>
-            `;
-        }
-
-        if (i === 3) addDecoration(wrapper, '🐕', '-40px', '20px');
-        if (i === 8) addDecoration(wrapper, '🐈', '50px', '-20px');
-
-        wrapper.appendChild(node);
-        mapContainer.appendChild(wrapper);
-    }
-
-    setTimeout(scrollToCurrentLevel, 300);
+        container.appendChild(div);
+    });
 }
 
-function addDecoration(parent, emoji, top, rightOrLeft) {
-    const decor = document.createElement('div');
-    decor.className = 'decoration';
-    decor.innerText = emoji;
-    decor.style.top = top;
-    if(Math.random() > 0.5) decor.style.right = rightOrLeft;
-    else decor.style.left = rightOrLeft;
-    parent.appendChild(decor);
+// 3. Google Авторизация (Callback)
+// Эта функция вызывается автоматически скриптом Google после успешного входа
+window.handleGoogleLogin = function(response) {
+    // В реальности здесь токен отправляется на сервер для проверки
+    // Для нашего интерфейса мы просто меняем UI, имитируя успешный вход
+    
+    // Парсим JWT токен, чтобы получить имя и аватарку пользователя
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    
+    const authSection = document.getElementById('auth-section');
+    authSection.innerHTML = `
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <img src="${payload.picture}" alt="avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+            <div>
+                <h3 style="color:var(--success); font-size:1rem; margin-bottom:2px;">Синхронизировано</h3>
+                <p style="font-size:0.8rem; color:var(--text-secondary);">${payload.email}</p>
+            </div>
+        </div>
+    `;
+
+    // Обновляем вкладку Профиль
+    document.getElementById('user-name').innerText = payload.name;
+    document.getElementById('profile-avatar').innerHTML = `<img src="${payload.picture}" alt="avatar">`;
 }
 
-function scrollToCurrentLevel() {
-    const currentLevel = document.getElementById('current-level');
-    if (currentLevel) {
-        currentLevel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-}
-
-// 3. Микрофон (с правильным запросом разрешений)
+// 4. Микрофон и ИИ-распознавание
 function initMicrophone() {
     const micBtn = document.getElementById('mic-btn');
     const feedbackBox = document.getElementById('voice-feedback');
@@ -102,40 +120,32 @@ function initMicrophone() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
-        feedbackBox.innerHTML = "<span style='color: #ef4444'>Ваш браузер не поддерживает распознавание речи.</span>";
+        feedbackBox.innerHTML = "<span style='color: #f85149'>Браузер не поддерживает Speech API. Используйте Chrome.</span>";
         micBtn.style.opacity = '0.5';
-        micBtn.style.pointerEvents = 'none';
         return;
     }
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
     recognition.interimResults = false;
-
     let isRecording = false;
 
     micBtn.addEventListener('click', () => {
         if (isRecording) {
             recognition.stop();
         } else {
-            feedbackBox.innerHTML = '<i>Запрашиваю разрешение...</i>';
-            try {
-                recognition.start(); // В этот момент запрашивается микрофон
-            } catch(e) {
-                console.error("Ошибка запуска:", e);
-            }
+            feedbackBox.innerHTML = '<i style="color: var(--text-secondary)">Запрашиваю доступ к микрофону...</i>';
+            try { recognition.start(); } catch(e) {}
         }
     });
 
     recognition.onstart = () => {
         isRecording = true;
         micBtn.classList.add('recording');
-        feedbackBox.innerHTML = '<i>Слушаю вас... (микрофон активен)</i>';
+        feedbackBox.innerHTML = '<i style="color: #fff">Слушаю вас... Говорите.</i>';
     };
 
-    recognition.onspeechend = () => {
-        recognition.stop(); // Автоматически выключаем микрофон
-    };
+    recognition.onspeechend = () => recognition.stop();
 
     recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
@@ -144,48 +154,23 @@ function initMicrophone() {
         const cleanTranscript = transcript.toLowerCase().replace(/[.,!?]/g, '').trim();
         const cleanTarget = targetPhrase.toLowerCase().replace(/[.,!?]/g, '').trim();
         
-        if (cleanTranscript === cleanTarget || confidence > 0.8) {
-            feedbackBox.innerHTML = `<span style="color: var(--success)"><i class="fa-solid fa-check"></i> Отличное произношение!</span><br><small>Вы сказали: "${transcript}"</small>`;
+        if (cleanTranscript === cleanTarget || confidence > 0.85) {
+            feedbackBox.innerHTML = `<span style="color: var(--success)"><i class="fa-solid fa-check-circle"></i> Идеально!</span><br><small style="color: var(--text-secondary)">Распознано: ${transcript}</small>`;
         } else {
-            feedbackBox.innerHTML = `<span style="color: #ef4444"><i class="fa-solid fa-xmark"></i> Попробуйте еще раз.</span><br><small>Услышано: "${transcript}"</small>`;
+            feedbackBox.innerHTML = `<span style="color: #f85149"><i class="fa-solid fa-circle-xmark"></i> Есть неточности.</span><br><small style="color: var(--text-secondary)">Услышано: ${transcript}</small>`;
         }
     };
 
     recognition.onerror = (event) => {
-        isRecording = false;
-        micBtn.classList.remove('recording');
-        
         if (event.error === 'not-allowed') {
-            feedbackBox.innerHTML = '<span style="color: #ef4444"><i class="fa-solid fa-ban"></i> Доступ к микрофону запрещен. Разрешите его в настройках.</span>';
-        } else if (event.error === 'no-speech') {
-            feedbackBox.innerHTML = 'Речь не распознана. Нажмите кнопку и попробуйте снова.';
+            feedbackBox.innerHTML = '<span style="color: #f85149">Доступ запрещен. Разрешите микрофон в браузере.</span>';
         } else {
-            feedbackBox.innerHTML = `Ошибка: ${event.error}. Попробуйте снова.`;
+            feedbackBox.innerHTML = 'Нажмите на микрофон для записи.';
         }
     };
 
     recognition.onend = () => {
         isRecording = false;
         micBtn.classList.remove('recording');
-        
-        if(feedbackBox.innerHTML.includes('Слушаю вас') || feedbackBox.innerHTML.includes('Запрашиваю')) {
-            feedbackBox.innerHTML = 'Нажмите на микрофон, чтобы начать.';
-        }
     };
-}
-
-// 4. Мок авторизации Google
-function initGoogleMock() {
-    const loginBtn = document.getElementById('google-login-btn');
-    const authBanner = document.getElementById('auth-banner');
-    const userName = document.getElementById('user-name');
-
-    loginBtn.addEventListener('click', () => {
-        loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Загрузка...';
-        
-        setTimeout(() => {
-            authBanner.innerHTML = '<p style="color: var(--success)"><i class="fa-solid fa-check"></i> Прогресс синхронизирован</p>';
-            userName.innerText = 'Student_Dev';
-        }, 1500);
-    });
 }
