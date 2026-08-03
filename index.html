@@ -3,79 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>English Journey</title>
+    <title>English Mastery Roadmap</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Подключаем иконки FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Официальный скрипт Google для авторизации -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-    <!-- Верхняя навигация -->
+    <!-- Верхняя навигация (Зафиксирована) -->
     <header class="top-nav">
-        <button class="tab-btn active" data-target="tab-adventure"><i class="fa-solid fa-map-location-dot"></i> Путь</button>
-        <button class="tab-btn" data-target="tab-cards"><i class="fa-solid fa-layer-group"></i> Карточки</button>
+        <button class="tab-btn active" data-target="tab-adventure"><i class="fa-solid fa-route"></i> Программа</button>
+        <button class="tab-btn" data-target="tab-cards"><i class="fa-solid fa-layer-group"></i> Практика</button>
         <button class="tab-btn" data-target="tab-voice"><i class="fa-solid fa-microphone-lines"></i> Речь</button>
     </header>
 
     <!-- Основной контент -->
     <main class="content-area">
         
-        <!-- Вкладка 1: Приключение (Карта) -->
+        <!-- Вкладка 1: Программа обучения (Roadmap) -->
         <section id="tab-adventure" class="tab-content active">
-            <div class="google-auth-banner" id="auth-banner">
-                <p>Сохрани прогресс!</p>
-                <button id="google-login-btn"><i class="fa-brands fa-google"></i> Войти</button>
+            
+            <!-- Блок настоящей авторизации Google -->
+            <div class="auth-section" id="auth-section">
+                <div class="auth-info">
+                    <h3>Синхронизация прогресса</h3>
+                    <p>Войди, чтобы сохранять данные в облаке</p>
+                </div>
+                <!-- Замени YOUR_CLIENT_ID на свой ключ из Google Cloud Console -->
+                <div id="g_id_onload"
+                     data-client_id="YOUR_CLIENT_ID.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleLogin"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-theme="filled_black" data-text="signin_with" data-shape="pill"></div>
             </div>
             
-            <div class="map-container" id="map-container">
-                <!-- Уровни генерируются через JS -->
+            <div class="roadmap-header">
+                <h2>Основы английского: Уровень 0</h2>
+                <p>Фундаментальная база. Без пропуска тем.</p>
+            </div>
+
+            <!-- Детальная структура пути -->
+            <div class="roadmap-container" id="roadmap-container">
+                <!-- Генерируется через JS -->
             </div>
         </section>
 
         <!-- Вкладка 2: Карточки -->
         <section id="tab-cards" class="tab-content">
-            <h2 class="section-title">Тренировка памяти</h2>
+            <h2 class="section-title">Интенсивная практика</h2>
             <div class="cards-container">
-                <div class="study-card" onclick="this.classList.toggle('flipped')">
+                <div class="study-card">
                     <div class="card-inner">
                         <div class="card-front">
-                            <i class="fa-solid fa-font"></i>
-                            <h3>Слова</h3>
-                            <p>Базовый вокабуляр</p>
-                        </div>
-                        <div class="card-back">
-                            <h3>Vocabulary</h3>
-                            <p>Начать тренировку (15 слов)</p>
-                            <button class="action-btn">Начать</button>
+                            <i class="fa-solid fa-spell-check"></i>
+                            <h3>Вокабуляр</h3>
+                            <p>Интервальное повторение</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="study-card" onclick="this.classList.toggle('flipped')">
+                <div class="study-card">
                     <div class="card-inner">
                         <div class="card-front">
-                            <i class="fa-solid fa-align-left"></i>
-                            <h3>Предложения</h3>
-                            <p>Структура и грамматика</p>
-                        </div>
-                        <div class="card-back">
-                            <h3>Sentences</h3>
-                            <p>Сборка предложений</p>
-                            <button class="action-btn">Начать</button>
+                            <i class="fa-solid fa-pen-nib"></i>
+                            <h3>Грамматика</h3>
+                            <p>Конструктор предложений</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="study-card" onclick="this.classList.toggle('flipped')">
+                <div class="study-card">
                     <div class="card-inner">
                         <div class="card-front">
-                            <i class="fa-solid fa-book-open"></i>
-                            <h3>Текст</h3>
-                            <p>Чтение и понимание</p>
-                        </div>
-                        <div class="card-back">
-                            <h3>Reading</h3>
-                            <p>Адаптированные тексты</p>
-                            <button class="action-btn">Начать</button>
+                            <i class="fa-solid fa-headphones"></i>
+                            <h3>Аудирование</h3>
+                            <p>Распознавание на слух</p>
                         </div>
                     </div>
                 </div>
@@ -84,11 +89,11 @@
 
         <!-- Вкладка 3: Голос (ИИ) -->
         <section id="tab-voice" class="tab-content">
-            <h2 class="section-title">Проверка произношения</h2>
+            <h2 class="section-title">Тренажер акцента</h2>
             <div class="voice-container">
                 <div class="target-phrase">
-                    <p class="subtitle">Прочитай вслух:</p>
-                    <h3 id="phrase-to-read">The weather is beautifully clear today.</h3>
+                    <p class="subtitle">Произнесите фразу:</p>
+                    <h3 id="phrase-to-read">Hello, I am learning English.</h3>
                 </div>
                 
                 <div class="mic-wrapper">
@@ -97,39 +102,32 @@
                 </div>
 
                 <div id="voice-feedback" class="feedback-box">
-                    Нажми на микрофон, чтобы начать.
+                    Готов к записи. Нажмите микрофон.
                 </div>
             </div>
         </section>
 
-        <!-- Вкладка 4: Профиль (скрыта из верхней панели) -->
+        <!-- Вкладка 4: Профиль -->
         <section id="tab-profile" class="tab-content">
-            <h2 class="section-title">Твой профиль</h2>
+            <h2 class="section-title">Статистика</h2>
             <div class="profile-stats">
-                <div class="avatar-circle">
-                    <i class="fa-solid fa-user"></i>
+                <div class="avatar-circle" id="profile-avatar">
+                    <i class="fa-solid fa-user-astronaut"></i>
                 </div>
                 <h3 id="user-name">Гость</h3>
                 
                 <div class="stat-box">
                     <div class="stat-item">
-                        <span class="stat-value">12</span>
-                        <span class="stat-label">Уровней</span>
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Уроков</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value">340</span>
+                        <span class="stat-value">0</span>
                         <span class="stat-label">Слов</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value">85%</span>
-                        <span class="stat-label">Точность</span>
-                    </div>
-                </div>
-
-                <div class="progress-section">
-                    <p>Общий прогресс A1</p>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" style="width: 45%;"></div>
+                        <span class="stat-value">0%</span>
+                        <span class="stat-label">Прогресс</span>
                     </div>
                 </div>
             </div>
@@ -139,8 +137,8 @@
 
     <!-- Нижняя навигация -->
     <nav class="bottom-nav">
-        <button class="bottom-btn active" data-target="tab-adventure"><i class="fa-solid fa-house"></i></button>
-        <button class="bottom-btn" data-target="tab-profile"><i class="fa-solid fa-user"></i></button>
+        <button class="bottom-btn active" data-target="tab-adventure"><i class="fa-solid fa-book-journal-whills"></i></button>
+        <button class="bottom-btn" data-target="tab-profile"><i class="fa-solid fa-chart-line"></i></button>
     </nav>
 
     <script src="script.js"></script>
