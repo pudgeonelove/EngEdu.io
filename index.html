@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>English Journey</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Подключаем иконки FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Верхняя навигация -->
+    <header class="top-nav">
+        <button class="tab-btn active" data-target="tab-adventure"><i class="fa-solid fa-map-location-dot"></i> Путь</button>
+        <button class="tab-btn" data-target="tab-cards"><i class="fa-solid fa-layer-group"></i> Карточки</button>
+        <button class="tab-btn" data-target="tab-voice"><i class="fa-solid fa-microphone-lines"></i> Речь</button>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="content-area">
+        
+        <!-- Вкладка 1: Приключение (Карта) -->
+        <section id="tab-adventure" class="tab-content active">
+            <div class="google-auth-banner" id="auth-banner">
+                <p>Сохрани прогресс!</p>
+                <button id="google-login-btn"><i class="fa-brands fa-google"></i> Войти</button>
+            </div>
+            
+            <div class="map-container" id="map-container">
+                <!-- Уровни генерируются через JS -->
+            </div>
+        </section>
+
+        <!-- Вкладка 2: Карточки -->
+        <section id="tab-cards" class="tab-content">
+            <h2 class="section-title">Тренировка памяти</h2>
+            <div class="cards-container">
+                <div class="study-card" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-font"></i>
+                            <h3>Слова</h3>
+                            <p>Базовый вокабуляр</p>
+                        </div>
+                        <div class="card-back">
+                            <h3>Vocabulary</h3>
+                            <p>Начать тренировку (15 слов)</p>
+                            <button class="action-btn">Начать</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="study-card" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-align-left"></i>
+                            <h3>Предложения</h3>
+                            <p>Структура и грамматика</p>
+                        </div>
+                        <div class="card-back">
+                            <h3>Sentences</h3>
+                            <p>Сборка предложений</p>
+                            <button class="action-btn">Начать</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="study-card" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-book-open"></i>
+                            <h3>Текст</h3>
+                            <p>Чтение и понимание</p>
+                        </div>
+                        <div class="card-back">
+                            <h3>Reading</h3>
+                            <p>Адаптированные тексты</p>
+                            <button class="action-btn">Начать</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Вкладка 3: Голос (ИИ) -->
+        <section id="tab-voice" class="tab-content">
+            <h2 class="section-title">Проверка произношения</h2>
+            <div class="voice-container">
+                <div class="target-phrase">
+                    <p class="subtitle">Прочитай вслух:</p>
+                    <h3 id="phrase-to-read">The weather is beautifully clear today.</h3>
+                </div>
+                
+                <div class="mic-wrapper">
+                    <button id="mic-btn" class="mic-btn"><i class="fa-solid fa-microphone"></i></button>
+                    <div class="pulse-ring"></div>
+                </div>
+
+                <div id="voice-feedback" class="feedback-box">
+                    Нажми на микрофон, чтобы начать.
+                </div>
+            </div>
+        </section>
+
+        <!-- Вкладка 4: Профиль (скрыта из верхней панели) -->
+        <section id="tab-profile" class="tab-content">
+            <h2 class="section-title">Твой профиль</h2>
+            <div class="profile-stats">
+                <div class="avatar-circle">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <h3 id="user-name">Гость</h3>
+                
+                <div class="stat-box">
+                    <div class="stat-item">
+                        <span class="stat-value">12</span>
+                        <span class="stat-label">Уровней</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">340</span>
+                        <span class="stat-label">Слов</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">85%</span>
+                        <span class="stat-label">Точность</span>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <p>Общий прогресс A1</p>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: 45%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Нижняя навигация -->
+    <nav class="bottom-nav">
+        <button class="bottom-btn active" data-target="tab-adventure"><i class="fa-solid fa-house"></i></button>
+        <button class="bottom-btn" data-target="tab-profile"><i class="fa-solid fa-user"></i></button>
+    </nav>
+
+    <script src="script.js"></script>
+</body>
+</html>
