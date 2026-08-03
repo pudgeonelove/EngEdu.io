@@ -12,11 +12,14 @@ function initTabs() {
 
     function switchTab(targetId) {
         contents.forEach(c => c.classList.remove('active'));
-        document.getElementById(targetId).classList.add('active');
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+            targetElement.classList.add('active');
+        }
 
         [...topTabs, ...bottomTabs].forEach(btn => {
             btn.classList.remove('active');
-            if(btn.dataset.target === targetId) {
+            if (btn.dataset.target === targetId) {
                 btn.classList.add('active');
             }
         });
@@ -26,198 +29,570 @@ function initTabs() {
     bottomTabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.target)));
 }
 
+let completedLessonsCount = 0;
+let userProgress = 0;
+
 const curriculum = [
     {
-        title: "Алфавит",
-        desc: "Буквы и их правильное произношение.",
+        title: "Алфавит и Звуки",
+        desc: "Полный разбор букв, алфавита и особенностей чтения.",
         steps: [
-            { title: "Знакомство с алфавитом", desc: "В английском языке 26 букв. Они делятся на гласные и согласные.", examples: ["A a [ei]", "B b [bi:]", "C c [si:]"] },
-            { title: "Особенности звучания", desc: "Правильное произношение звуков формирует вашу уверенную речь с первых минут.", examples: ["Z [zed] (UK) / [zi:] (US)", "J [dʒei]"] }
+            { 
+                type: "theory", 
+                title: "Анатомия английского алфавита", 
+                desc: "В английском языке ровно 26 букв. Гласные буквы (A, E, I, O, U и иногда Y) могут звучать совершенно по-разному в зависимости от окружения. Давайте разберем базовые звуки.", 
+                examples: ["A a [ei] — как в слове make", "B b [bi:] — звонкий согласный", "C c [si:] — дает [s] перед e, i, y и [k] в остальных случаях"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Проверка: Гласные буквы", 
+                desc: "Какая из этих букв является классической гласной?", 
+                options: ["B", "E", "S", "T"], 
+                correct: 1, 
+                feedback: "Верно! Буква 'E' — это гласная буква." 
+            },
+            { 
+                type: "theory", 
+                title: "Особые звуки и транскрипция", 
+                desc: "Чтобы говорить без акцента, важно сразу привыкнуть к символам транскрипции.", 
+                examples: ["Z [zed] в британском и [zi:] в американском варианте", "J [dʒei] — мягкий шипящий звук с которого начинаются слова juice, jump"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Проверка: Звучание", 
+                desc: "Какой звук обозначается значком [di:]?", 
+                options: ["Буква A", "Буква D", "Буква B", "Буква Z"], 
+                correct: 1, 
+                feedback: "Отлично! Буква D читается как [di:]." 
+            }
         ]
     },
     {
-        title: "Гласные звуки",
-        desc: "Короткие и долгие гласные, транскрипция.",
+        title: "Короткие и Долгие Гласные",
+        desc: "Различаем краткие звуки и глубокие долгие гласные.",
         steps: [
-            { title: "Короткие гласные", desc: "Звуки произносятся быстро и четко без растягивания.", examples: ["cat [kæt]", "sit [sɪt]", "pen [pen]"] },
-            { title: "Долгие гласные", desc: "Требуют небольшого удержания звука при выдохе.", examples: ["father [ˈfɑːðə]", "tree [triː]", "food [fuːd]"] }
+            { 
+                type: "theory", 
+                title: "Краткие гласные звуки", 
+                desc: "Краткие гласные произносятся мгновенно, резко и энергично, без всякого растягивания.", 
+                examples: ["cat [kæt] — кот", "sit [sɪt] — сидеть", "pen [pen] — ручка"] 
+            },
+            { 
+                type: "theory", 
+                title: "Долгие гласные звуки", 
+                desc: "Долгие гласные требуют удержания воздуха, они тянутся примерно в два раза дольше.", 
+                examples: ["father [ˈfɑːðə] — отец", "tree [triː] — дерево", "food [fuːd] — еда"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Интерактивный тест", 
+                desc: "Какой звук в слове 'tree' [triː]?", 
+                options: ["Краткий [ɪ]", "Долгий [i:]", "Дифтонг [eɪ]", "Глухой [p]"], 
+                correct: 1, 
+                feedback: "Правильно! Две точки в транскрипции всегда означают долготу звука." 
+            }
         ]
     },
     {
-        title: "Согласные звуки",
-        desc: "Особые звуки: [θ], [ð], [ŋ].",
+        title: "Сложные Согласные",
+        desc: "Межзубные звуки [θ], [ð] и носовой [ŋ].",
         steps: [
-            { title: "Межзубные звуки", desc: "Язык слегка помещается между зубами для правильного звучания.", examples: ["think [θɪŋk]", "this [ðɪs]"] },
-            { title: "Носовые согласные", desc: "Звук [ŋ] произносится с задействованием носовой полости.", examples: ["sing [sɪŋ]", "morning [ˈmɔːrnɪŋ]"] }
+            { 
+                type: "theory", 
+                title: "Межзубные звуки (Theta & Eth)", 
+                desc: "Положите кончик языка между зубами и подуйте. Получится глухой звук [θ] (как в think) или звонкий [ð] (как в this).", 
+                examples: ["think [θɪŋk] — думать", "this [ðɪs] — этот"] 
+            },
+            { 
+                type: "theory", 
+                title: "Носовой согласный [ŋ]", 
+                desc: "Звук [ŋ] рождается глубоко в носу, задняя часть языка прижимается к нёбу. Звучит в окончаниях -ing.", 
+                examples: ["sing [sɪŋ] — петь", "morning [ˈmɔːrnɪŋ] — утро"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Проверка понимания", 
+                desc: "Как правильно произносить звук в начале слова 'think'?", 
+                options: ["Как русская С", "Как русская Т", "С языком между зубами", "Как глухая Ф"], 
+                correct: 2, 
+                feedback: "Верно! Это уникальный межзубный звук." 
+            }
         ]
     },
     {
-        title: "Правила чтения",
-        desc: "Открытый и закрытый слог.",
+        title: "Правила Чтения (Слоги)",
+        desc: "Открытый и закрытый слог: секрет правильного чтения.",
         steps: [
-            { title: "Открытый слог", desc: "Слог заканчивается на гласную, буква читается как в алфавите.", examples: ["make [meɪk]", "note [nəʊt]"] },
-            { title: "Закрытый слог", desc: "Слог заканчивается на согласную, гласная дает краткий звук.", examples: ["cat [kæt]", "hot [hɒt]"] }
+            { 
+                type: "theory", 
+                title: "Открытый слог", 
+                desc: "Слог заканчивается на гласную (часто на немую 'e'). Гласная в нем читается так же, как называется в алфавите.", 
+                examples: ["make [meɪk] (a читается как [eɪ])", "note [nəʊt] (o читается как [əʊ])"] 
+            },
+            { 
+                type: "theory", 
+                title: "Закрытый слог", 
+                desc: "Слог заканчивается на согласную. Гласная в таком слоге дает короткий, отрывистый звук.", 
+                examples: ["cat [kæt] (краткое [æ])", "hot [hɒt] (краткое [ɒ])"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Закрепление правила", 
+                desc: "Каким будет слог в слове 'make'?", 
+                options: ["Открытый", "Закрытый", "Смешанный", "Согласный"], 
+                correct: 0, 
+                feedback: "Верно! Наличие немой 'e' на конце делает слог открытым." 
+            }
         ]
     },
     {
-        title: "Приветствия",
-        desc: "Hello, Hi, How are you? и ответы на них.",
+        title: "Приветствия и Знакомство",
+        desc: "Hello, Hi, How are you? и первые диалоги.",
         steps: [
-            { title: "Стандартные приветствия", desc: "Используются в повседневном общении.", examples: ["Hello! - Здравствуйте!", "Hi! - Привет!", "Good morning! - Доброе утро!"] },
-            { title: "Вежливые вопросы", desc: "Как узнать о делах собеседника.", examples: ["How are you? - Как дела?", "I'm fine, thank you. - Я в порядке, спасибо."] }
+            { 
+                type: "theory", 
+                title: "Базовые фразы дня", 
+                desc: "Учимся приветствовать собеседника в зависимости от времени суток и ситуации.", 
+                examples: ["Hello! — Здравствуйте! (универсально)", "Hi! — Привет! (неформально)", "Good morning! — Доброе утро!"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Перевод фразы", 
+                desc: "Как переводится на английский 'Доброе утро'?", 
+                options: ["Good evening", "Good morning", "Good night", "Hello friend"], 
+                correct: 1, 
+                feedback: "Отлично! 'Good morning' используется до полудня." 
+            },
+            { 
+                type: "theory", 
+                title: "Вежливые вопросы", 
+                desc: "Как спросить о делах и ответить на них с улыбкой.", 
+                examples: ["How are you? — Как дела?", "I'm fine, thank you. — Я в порядке, спасибо."] 
+            }
         ]
     },
     {
-        title: "Личные местоимения",
-        desc: "I, you, he, she, it, we, they.",
+        title: "Личные Местоимения",
+        desc: "I, you, he, she, it, we, they — фундамент речи.",
         steps: [
-            { title: "Единственное число", desc: "Обозначают одно лицо или предмет.", examples: ["I - я", "You - ты / вы", "He / She / It - он / она / оно"] },
-            { title: "Множественное число", desc: "Обозначают группу лиц или предметов.", examples: ["We - мы", "They - они"] }
+            { 
+                type: "theory", 
+                title: "Единственное число", 
+                desc: "Местоимения для указания на одного человека или предмет.", 
+                examples: ["I — я", "You — ты / вы", "He / She / It — он / она / оно (неодушевленное)"] 
+            },
+            { 
+                type: "theory", 
+                title: "Множественное число", 
+                desc: "Местоимения для группы людей или объектов.", 
+                examples: ["We — мы", "They — они"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на местоимения", 
+                desc: "Какое местоимение нужно использовать для замены слова 'cat' (кошка)?", 
+                options: ["He", "She", "It", "They"], 
+                correct: 2, 
+                feedback: "Правильно! Для животных и предметов используется 'It'." 
+            }
         ]
     },
     {
-        title: "Глагол 'To Be' (Утверждение)",
-        desc: "Фундамент: I am, He is, They are.",
+        title: "Глагол To Be (Утверждение)",
+        desc: "Главный глагол английского: I am, He is, They are.",
         steps: [
-            { title: "Формы глагола to be", desc: "Меняется в зависимости от подлежащего.", examples: ["I am (I'm)", "He / She / It is (He's)", "We / You / They are (They're)"] }
+            { 
+                type: "theory", 
+                title: "Формы глагола To Be", 
+                desc: "В английском языке глагол 'быть' меняется в зависимости от лица:", 
+                examples: ["I am (I'm) — я есть", "He / She / It is (He's) — он/она/оно есть", "We / You / They are (They're) — мы/вы/они есть"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Выбор формы", 
+                desc: "Какая форма глагола to be нужна для местоимения 'We'?", 
+                options: ["am", "is", "are", "be"], 
+                correct: 2, 
+                feedback: "Верно! Мы говорим 'We are'." 
+            },
+            { 
+                type: "theory", 
+                title: "Примеры из жизни", 
+                desc: "Строим первые полноценные предложения с глаголом связкой.", 
+                examples: ["I am a student. — Я студент.", "They are happy. — Они счастливы."] 
+            }
         ]
     },
     {
-        title: "Глагол 'To Be' (Отрицание)",
-        desc: "Формирование частицы NOT.",
+        title: "Глагол To Be (Отрицание)",
+        desc: "Добавляем частицу NOT для отрицательных фраз.",
         steps: [
-            { title: "Добавление NOT", desc: "Отрицательная конструкция строится просто.", examples: ["I am not (I'm not)", "He is not (He isn't)", "They are not (They aren't)"] }
+            { 
+                type: "theory", 
+                title: "Правило построения отрицания", 
+                desc: "Достаточно поставить частицу 'not' сразу после формы глагола to be.", 
+                examples: ["I am not (I'm not) busy. — Я не занят.", "He is not (isn't) tired. — Он не устал.", "They are not (aren't) here. — Их здесь нет."] 
+            },
+            { 
+                type: "quiz", 
+                title: "Проверка отрицания", 
+                desc: "Как сократить фразу 'He is not'?", 
+                options: ["He'sn't", "He isn't", "He not is", "He is'nt"], 
+                correct: 1, 
+                feedback: "Отлично! Правильное сокращение — 'isn't'." 
+            }
         ]
     },
     {
-        title: "Глагол 'To Be' (Вопрос)",
-        desc: "Порядок слов в вопросительных предложениях.",
+        title: "Глагол To Be (Вопрос)",
+        desc: "Инверсия: выносим глагол на первое место.",
         steps: [
-            { title: "Инверсия", desc: "Глагол выносится на первое место.", examples: ["Are you ready? - Ты готов?", "Is he a student? - Он студент?"] }
+            { 
+                type: "theory", 
+                title: "Порядок слов в вопросе", 
+                desc: "Чтобы задать вопрос, нужно поменять местами подлежащее и глагол to be (поставить глагол в самое начало).", 
+                examples: ["You are ready -> Are you ready? — Ты готов?", "He is a doctor -> Is he a doctor? — Он врач?"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на вопрос", 
+                desc: "Как правильно спросить 'Они дома?'", 
+                options: ["Are they at home?", "They are at home?", "Is they at home?", "At home they are?"], 
+                correct: 0, 
+                feedback: "Верно! Глагол 'Are' выносится в начало предложения." 
+            }
         ]
     },
     {
         title: "Артикли A / An",
-        desc: "Неопределенный артикль и существительные.",
+        desc: "Неопределенные артикли с исчисляемыми существительными.",
         steps: [
-            { title: "Правило выбора", desc: "Используется с исчисляемыми существительными в единственном числе.", examples: ["a cat - кот (с согласной)", "an apple - яблоко (с гласной)"] }
+            { 
+                type: "theory", 
+                title: "Правило выбора a / an", 
+                desc: "Артикль 'a' используется перед согласными звуками, а 'an' — перед гласными звуками для благозвучия.", 
+                examples: ["a cat — кот (начинается с согласного звука [k])", "an apple — яблоко (начинается с гласного звука [æ])"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на артикль", 
+                desc: "Какой артикль нужно поставить перед словом 'umbrella' (зонт)?", 
+                options: ["a", "an", "the", "ничего не нужно"], 
+                correct: 1, 
+                feedback: "Правильно! Слово начинается с гласного звука [ʌ], поэтому выбираем 'an'." 
+            }
         ]
     },
     {
-        title: "Множественное число",
-        desc: "Окончания -s, -es и исключения.",
+        title: "Множественное Число",
+        desc: "Окончания -s, -es и интересные исключения.",
         steps: [
-            { title: "Стандартное правило", desc: "Добавление окончания -s.", examples: ["book -> books", "car -> cars"] },
-            { title: "Исключения", desc: "Слова, меняющие форму полностью.", examples: ["man -> men", "child -> children"] }
+            { 
+                type: "theory", 
+                title: "Стандартное правило", 
+                desc: "Чтобы образовать множественное число большинства существительных, просто добавляем окончание -s.", 
+                examples: ["book -> books (книга -> книги)", "car -> cars (машина -> машины)"] 
+            },
+            { 
+                type: "theory", 
+                title: "Важные исключения", 
+                desc: "Некоторые слова меняют форму полностью, их нужно запомнить наизусть.", 
+                examples: ["man -> men (мужчина -> мужчины)", "child -> children (ребенок -> дети)", "mouse -> mice (мышь -> мыши)"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Проверка исключений", 
+                desc: "Какова форма множественного числа для слова 'child'?", 
+                options: ["childs", "childes", "children", "child"], 
+                correct: 2, 
+                feedback: "Верно! Это одно из самых известных исключений." 
+            }
         ]
     },
     {
-        title: "Указательные местоимения",
-        desc: "This/That, These/Those.",
+        title: "Указательные Местоимения",
+        desc: "This / That и These / Those в пространстве.",
         steps: [
-            { title: "Близко и далеко", desc: "Указываем на расположение объектов.", examples: ["This is my book (это близко)", "That is a star (то далеко)"] }
+            { 
+                type: "theory", 
+                title: "Близко и далеко (Ед. число)", 
+                desc: "Используем this для предметов рядом и that для предметов на расстоянии.", 
+                examples: ["This is my book. — Это моя книга (в руках).", "That is a star. — То вон та звезда (в небе)."] 
+            },
+            { 
+                type: "theory", 
+                title: "Близко и далеко (Мн. число)", 
+                desc: "Для нескольких предметов используем these (эти) и those (те).", 
+                examples: ["These are my cats. — Это мои коты.", "Those are mountains. — Те горы высокие."] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на указатели", 
+                desc: "Что выберете для предмета, который далеко и он один?", 
+                options: ["This", "That", "These", "Those"], 
+                correct: 1, 
+                feedback: "Отлично! 'That' указывает на удаленный объект в единственном числе." 
+            }
         ]
     },
     {
-        title: "Притяжательные местоимения",
-        desc: "My, your, his, her, our, their.",
+        title: "Притяжательные Местоимения",
+        desc: "My, your, his, her, our, their — кому что принадлежит.",
         steps: [
-            { title: "Принадлежность", desc: "Показывают, кому принадлежит предмет.", examples: ["My car - моя машина", "Their house - их дом"] }
+            { 
+                type: "theory", 
+                title: "Выражение принадлежности", 
+                desc: "Эти слова всегда стоят перед существительным, показывая его владельца.", 
+                examples: ["My car — моя машина", "Your house — твой / ваш дом", "His / Her dog — его / её собака"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Практический вопрос", 
+                desc: "Как сказать по-английски 'наша школа'?", 
+                options: ["My school", "Their school", "Our school", "Your school"], 
+                correct: 2, 
+                feedback: "Правильно! 'Our' переводится как 'наш / наша / наши'." 
+            }
         ]
     },
     {
-        title: "Цвета и числа",
-        desc: "Базовый словарный запас (0-100, цвета).",
+        title: "Цвета и Числа",
+        desc: "Расширяем словарный запас: счет до 100 и палитра.",
         steps: [
-            { title: "Числа", desc: "Основа счета.", examples: ["One, Two, Three...", "Ten, Twenty, Hundred"] }
+            { 
+                type: "theory", 
+                title: "Базовые цвета", 
+                desc: "Описываем окружающий мир на английском языке.", 
+                examples: ["Red — красный, Blue — синий", "Green — зеленый, Yellow — желтый", "Black — черный, White — белый"] 
+            },
+            { 
+                type: "theory", 
+                title: "Числа от 1 до 10", 
+                desc: "Основа для любого счета и времени.", 
+                examples: ["1 - One, 2 - Two, 3 - Three", "4 - Four, 5 - Five, 6 - Six", "7 - Seven, 8 - Eight, 9 - Nine, 10 - Ten"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на цвета", 
+                desc: "Как переводится цвет 'Green'?", 
+                options: ["Красный", "Зеленый", "Синий", "Желтый"], 
+                correct: 1, 
+                feedback: "Верно! Green — это зеленый." 
+            }
         ]
     },
     {
         title: "Present Simple (Введение)",
-        desc: "Настоящее простое время: правила и смысл.",
+        desc: "Настоящее простое время для привычек и законов природы.",
         steps: [
-            { title: "Регулярность", desc: "Описывает привычки и повторяющиеся действия.", examples: ["I work every day.", "Water boils at 100 degrees."] }
+            { 
+                type: "theory", 
+                title: "Суть Present Simple", 
+                desc: "Это время используется для описания регулярных, повторяющихся действий, привычек или общеизвестных фактов.", 
+                examples: ["I work every day. — Я работаю каждый день.", "Water boils at 100 degrees. — Вода кипит при 100 градусах."] 
+            },
+            { 
+                type: "quiz", 
+                title: "Проверка концепции", 
+                desc: "Для чего используется время Present Simple?", 
+                options: ["Для действий прямо сейчас", "Для регулярных привычек и фактов", "Для прошлых событий", "Для планов на завтра"], 
+                correct: 1, 
+                feedback: "Отлично! Именно для регулярности и законов." 
+            }
         ]
     },
     {
         title: "Present Simple (Глаголы)",
-        desc: "Окончания -s и -es у глаголов (he/she/it).",
+        desc: "Магия окончания -s и -es для местоимений He, She, It.",
         steps: [
-            { title: "Правило 3 лица", desc: "С местоимениями he, she, it добавляем -s.", examples: ["He likes coffee.", "She reads books."] }
+            { 
+                type: "theory", 
+                title: "Правило третьего лица", 
+                desc: "Когда подлежащее выражено местоимениями He, She или It, к глаголу обязательно добавляется окончание -s (или -es).", 
+                examples: ["I like coffee. (Мне нравится)", "He likeS coffee. (Ему нравится)", "She readS books. (Она читает книги)"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на окончание", 
+                desc: "Как правильно сказать 'Она работает'?", 
+                options: ["She work", "She works", "She working", "She worked"], 
+                correct: 1, 
+                feedback: "Верно! С местоимением 'She' добавляем окончание -s." 
+            }
         ]
     },
     {
-        title: "Предлоги места",
-        desc: "In, on, at, under, behind.",
+        title: "Предлоги Места",
+        desc: "In, on, at — где именно находится предмет.",
         steps: [
-            { title: "Ориентация в пространстве", desc: "Где находится объект.", examples: ["In the room - в комнате", "On the table - на столе"] }
+            { 
+                type: "theory", 
+                title: "Разбор основных предлогов", 
+                desc: "Инструменты для ориентации в пространстве.", 
+                examples: ["In — внутри закрытого пространства (in the room)", "On — на поверхности (on the table)", "At — в конкретной точке / месте (at home)"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на предлоги", 
+                desc: "Какой предлог выберете для фразы 'на столе'?", 
+                options: ["In", "On", "At", "Under"], 
+                correct: 1, 
+                feedback: "Правильно! Поверхность всегда обозначается предлогом 'on'." 
+            }
         ]
     },
     {
-        title: "Семья и родственники",
-        desc: "Mother, father, sibling, cousin.",
+        title: "Семья и Родственники",
+        desc: "Mother, father, brother, sister и семейные связи.",
         steps: [
-            { title: "Близкий круг", desc: "Слова для описания семьи.", examples: ["Mother / Father", "Brother / Sister"] }
+            { 
+                type: "theory", 
+                title: "Близкий круг", 
+                desc: "Слова для описания членов семьи.", 
+                examples: ["Mother / Father — мама / папа", "Brother / Sister — брат / сестра", "Parents — родители"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Перевод слова", 
+                desc: "Как переводится 'brother'?", 
+                options: ["Сестра", "Брат", "Дядя", "Сын"], 
+                correct: 1, 
+                feedback: "Отлично! Brother — это брат." 
+            }
         ]
     },
     {
-        title: "Present Simple (Do/Does)",
-        desc: "Отрицания и вопросы в простом времени.",
+        title: "Present Simple (Do / Does)",
+        desc: "Строим отрицания и вопросы через вспомогательные глаголы.",
         steps: [
-            { title: "Вспомогательные глаголы", desc: "Do для I/we/you/they, Does для he/she/it.", examples: ["Do you speak English?", "He does not know."] }
+            { 
+                type: "theory", 
+                title: "Использование Do и Does", 
+                desc: "Для вопросов и отрицаний в Present Simple нужны помощники: Do (для I, you, we, they) и Does (для he, she, it). При этом у основного глагола пропадает окончание -s!", 
+                examples: ["Do you speak English? — Ты говоришь по-английски?", "He does not (doesn't) know. — Он не знает."] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на помощника", 
+                desc: "Какой вспомогательный глагол нужен для местоимения 'He' в вопросе?", 
+                options: ["Do", "Does", "Is", "Are"], 
+                correct: 1, 
+                feedback: "Верно! Для he, she, it всегда используется 'Does'." 
+            }
         ]
     },
     {
         title: "Артикль The",
-        desc: "Когда использовать определенный артикль.",
+        desc: "Определенный артикль: когда объект уникален или уже знаком.",
         steps: [
-            { title: "Конкретный предмет", desc: "Когда собеседник понимает, о чем речь.", examples: ["Open the door.", "The sun is bright."] }
+            { 
+                type: "theory", 
+                title: "Суть определенного артикля", 
+                desc: "Арктиль 'the' указывает на конкретный предмет, о котором собеседники уже знают или который существует в единственном экземпляре.", 
+                examples: ["Open the door. — Открой дверь (именно эту в комнате).", "The sun is bright. — Солнце яркое (солнце такое одно)."] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на артикль", 
+                desc: "Нужен ли артикль 'the' перед единственным в мире солнцем?", 
+                options: ["Да, The sun", "Нет, просто sun", "Нужен an sun", "Нужен a sun"], 
+                correct: 0, 
+                feedback: "Правильно! Уникальные объекты всегда идут с артиклем 'the'." 
+            }
         ]
     },
     {
         title: "Модальный глагол Can",
-        desc: "Выражение физической способности.",
+        desc: "Выражение физической способности и умения что-то делать.",
         steps: [
-            { title: "Способность и умение", desc: "Умение совершить действие.", examples: ["I can swim.", "Can you help me?"] }
+            { 
+                type: "theory", 
+                title: "Правила с модальным глаголом Can", 
+                desc: "Глагол can не меняется по лицам и не требует частицы 'to' после себя.", 
+                examples: ["I can swim. — Я умею плавать.", "Can you help me? — Ты можешь мне помочь?", "He cannot (can't) fly. — Он не умеет летать."] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест на модальный глагол", 
+                desc: "Как правильно сказать 'Я умею танцевать'?", 
+                options: ["I can to dance", "I can dance", "I cans dance", "I am can dance"], 
+                correct: 1, 
+                feedback: "Верно! Частица 'to' после 'can' никогда не ставится." 
+            }
         ]
     },
     {
-        title: "Уровень 2: Простые прошедшее и будущее время",
-        desc: "Past Simple и Future Simple для описания событий.",
+        title: "Уровень 2: Прошлые и Будущие события",
+        desc: "Past Simple и Future Simple для расширения временной шкалы.",
         steps: [
-            { title: "Past Simple (Правильные глаголы)", desc: "Образование прошедшего времени с помощью окончания -ed.", examples: ["I played tennis yesterday.", "She worked hard."] },
-            { title: "Future Simple (Will)", desc: "Выражение планов и решений на будущее.", examples: ["I will help you tomorrow.", "It will rain later."] }
+            { 
+                type: "theory", 
+                title: "Past Simple (Прошедшее время)", 
+                desc: "Для правильных глаголов прошедшее время образуется добавлением окончания -ed.", 
+                examples: ["I played tennis yesterday. — Я играл в теннис вчера.", "She worked hard. — Она упорно работала."] 
+            },
+            { 
+                type: "theory", 
+                title: "Future Simple (Будущее время)", 
+                desc: "Используем вспомогательное слово 'will' для выражения планов, обещаний и решений на будущее.", 
+                examples: ["I will help you tomorrow. — Я помогу тебе завтра.", "It will rain later. — Позже пойдет дождь."] 
+            },
+            { 
+                type: "quiz", 
+                title: "Тест по временам", 
+                desc: "Какой показатель указывает на прошедшее время для правильных глаголов?", 
+                options: ["-ing", "-ed", "will", "does"], 
+                correct: 1, 
+                feedback: "Отлично! Окончание -ed создает форму Past Simple." 
+            }
         ]
     },
     {
-        title: "Уровень 2: Сравнение предметов и базовые вопросы",
+        title: "Уровень 2: Сравнение и Вопросы",
         desc: "Сравнительные степени прилагательных и вопросительные слова.",
         steps: [
-            { title: "Сравнительные прилагательные", desc: "Использование суффикса -er и слова more.", examples: ["Fast -> faster", "Beautiful -> more beautiful"] },
-            { title: "Вопросительные слова (WH-questions)", desc: "Who, what, where, when, why, how.", examples: ["Where do you live?", "Why are you late?"] }
+            { 
+                type: "theory", 
+                title: "Сравнительные прилагательные", 
+                desc: "Для коротких слов добавляем суффикс -er, а для длинных используем слово 'more' (более).", 
+                examples: ["Fast -> faster (быстрый -> быстрее)", "Beautiful -> more beautiful (красивый -> более красивый)"] 
+            },
+            { 
+                type: "theory", 
+                title: "Вопросительные слова (WH-questions)", 
+                desc: "Who (кто), what (что), where (где), when (когда), why (почему), how (как).", 
+                examples: ["Where do you live? — Где ты живешь?", "Why are you late? — Почему ты опаздываешь?"] 
+            },
+            { 
+                type: "quiz", 
+                title: "Итоговый тест уровня", 
+                desc: "Как переводится вопросительное слово 'Where'?", 
+                options: ["Когда", "Где / Куда", "Почему", "Кто"], 
+                correct: 1, 
+                feedback: "Великолепно! Вы завершили вводный блок тем." 
+            }
         ]
     }
 ];
 
 function initDetailedRoadmap() {
     const container = document.getElementById('roadmap-container');
+    if (!container) return;
     container.innerHTML = '';
-    
-    const currentProgress = 0; 
 
     curriculum.forEach((lesson, index) => {
         const div = document.createElement('div');
         div.className = 'roadmap-module';
         
-        if (index < currentProgress) {
+        if (index < userProgress) {
             div.classList.add('completed');
-        } else if (index === currentProgress) {
+        } else if (index === userProgress) {
             div.classList.add('current');
         } else {
             div.classList.add('locked');
         }
 
-        const statusIcon = index < currentProgress ? '<i class="fa-solid fa-check" style="color: var(--success)"></i>' : (index === currentProgress ? '<i class="fa-solid fa-lock-open"></i>' : '<i class="fa-solid fa-lock"></i>');
+        const statusIcon = index < userProgress ? '<i class="fa-solid fa-check" style="color: var(--success)"></i>' : (index === userProgress ? '<i class="fa-solid fa-lock-open"></i>' : '<i class="fa-solid fa-lock"></i>');
 
         div.innerHTML = `
             <div class="module-header">
@@ -228,67 +603,149 @@ function initDetailedRoadmap() {
             <div class="module-desc">${lesson.desc}</div>
         `;
         
-        div.addEventListener('click', () => openLessonModal(lesson, index + 1));
+        div.addEventListener('click', () => openLessonModal(lesson, index + 1, index));
         container.appendChild(div);
     });
 }
 
-function openLessonModal(lesson, lessonNum) {
+function openLessonModal(lesson, lessonNum, lessonIndex) {
     const modal = document.getElementById('lesson-modal');
     const body = document.getElementById('lesson-body');
+    const closeModalBtn = document.getElementById('close-modal');
     
+    if (!modal || !body) return;
+
     let currentStep = 0;
 
     function renderStep() {
         const step = lesson.steps[currentStep];
-        body.innerHTML = `
-            <span class="module-number">Урок ${lessonNum} • Шаг ${currentStep + 1} из ${lesson.steps.length}</span>
-            <h3 class="lesson-step-title" style="margin-top: 8px;">${step.title}</h3>
-            <p class="lesson-step-desc">${step.desc}</p>
-            <div class="lesson-examples">
-                <h4>Примеры из практики:</h4>
-                <ul>
-                    ${step.examples.map(ex => `<li>${ex}</li>`).join('')}
-                </ul>
-            </div>
-            <div class="lesson-nav-btns">
-                ${currentStep > 0 ? '<button class="lesson-btn secondary" id="prev-step">Назад</button>' : ''}
-                <button class="lesson-btn primary" id="next-step">${currentStep < lesson.steps.length - 1 ? 'Далее' : 'Завершить урок'}</button>
-            </div>
-        `;
+        
+        if (step.type === "theory") {
+            body.innerHTML = `
+                <div style="animation: contentIn 0.3s ease;">
+                    <span class="module-number">Урок ${lessonNum} • Шаг ${currentStep + 1} из ${lesson.steps.length}</span>
+                    <h3 class="lesson-step-title" style="margin-top: 8px;">${step.title}</h3>
+                    <p class="lesson-step-desc">${step.desc}</p>
+                    <div class="lesson-examples">
+                        <h4>Разбор и примеры:</h4>
+                        <ul>
+                            ${step.examples.map(ex => `<li style="margin-bottom: 6px;">${ex}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="lesson-nav-btns">
+                        ${currentStep > 0 ? '<button class="lesson-btn secondary" id="prev-step">Назад</button>' : ''}
+                        <button class="lesson-btn primary" id="next-step">${currentStep < lesson.steps.length - 1 ? 'Далее' : 'Завершить урок'}</button>
+                    </div>
+                </div>
+            `;
+        } else if (step.type === "quiz") {
+            body.innerHTML = `
+                <div style="animation: contentIn 0.3s ease;">
+                    <span class="module-number" style="color: var(--warning);">Интерактивная проверка • Шаг ${currentStep + 1} из ${lesson.steps.length}</span>
+                    <h3 class="lesson-step-title" style="margin-top: 8px;">${step.title}</h3>
+                    <p class="lesson-step-desc" style="font-weight: 600; color: #fff;">${step.desc}</p>
+                    
+                    <div class="quiz-options" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
+                        ${step.options.map((opt, oIdx) => `
+                            <button class="quiz-option-btn" data-index="${oIdx}" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px 18px; border-radius: 12px; text-align: left; cursor: pointer; font-size: 1rem; transition: all 0.2s;">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    
+                    <div id="quiz-feedback" style="margin-bottom: 20px; font-weight: 600; min-height: 24px;"></div>
+                    
+                    <div class="lesson-nav-btns">
+                        ${currentStep > 0 ? '<button class="lesson-btn secondary" id="prev-step">Назад</button>' : ''}
+                        <button class="lesson-btn primary" id="next-step" style="opacity: 0.5; pointer-events: none;">Далее</button>
+                    </div>
+                </div>
+            `;
 
-        if (currentStep > 0) {
-            document.getElementById('prev-step').addEventListener('click', () => {
-                currentStep--;
-                renderStep();
+            const optionBtns = body.querySelectorAll('.quiz-option-btn');
+            const nextBtn = body.querySelector('#next-step');
+            const feedbackBox = body.querySelector('#quiz-feedback');
+
+            optionBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selectedIdx = parseInt(btn.dataset.index);
+                    
+                    optionBtns.forEach(b => {
+                        b.style.pointerEvents = 'none';
+                        const bIdx = parseInt(b.dataset.index);
+                        if (bIdx === step.correct) {
+                            b.style.background = 'rgba(16, 185, 129, 0.2)';
+                            b.style.borderColor = 'var(--success)';
+                            b.style.color = '#34d399';
+                        } else if (bIdx === selectedIdx) {
+                            b.style.background = 'rgba(239, 68, 68, 0.2)';
+                            b.style.borderColor = '#ef4444';
+                            b.style.color = '#f87171';
+                        }
+                    });
+
+                    if (selectedIdx === step.correct) {
+                        feedbackBox.innerHTML = `<span style="color: var(--success);"><i class="fa-solid fa-circle-check"></i> ${step.feedback}</span>`;
+                    } else {
+                        feedbackBox.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-circle-xmark"></i> Неверно. Правильный вариант подсвечен зеленым.</span>`;
+                    }
+
+                    nextBtn.style.opacity = '1';
+                    nextBtn.style.pointerEvents = 'auto';
+                });
             });
         }
 
-        document.getElementById('next-step').addEventListener('click', () => {
-            if (currentStep < lesson.steps.length - 1) {
-                currentStep++;
-                renderStep();
-            } else {
-                modal.classList.remove('open');
-                updateProgressOnComplete();
+        if (currentStep > 0) {
+            const prevBtn = document.getElementById('prev-step');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    currentStep--;
+                    renderStep();
+                });
             }
-        });
+        }
+
+        const nextBtnAction = document.getElementById('next-step');
+        if (nextBtnAction) {
+            nextBtnAction.addEventListener('click', () => {
+                if (currentStep < lesson.steps.length - 1) {
+                    currentStep++;
+                    renderStep();
+                } else {
+                    modal.classList.remove('open');
+                    updateProgressOnComplete(lessonIndex);
+                }
+            });
+        }
     }
 
     renderStep();
     modal.classList.add('open');
 
-    document.getElementById('close-modal').onclick = () => {
-        modal.classList.remove('open');
-    };
+    if (closeModalBtn) {
+        closeModalBtn.onclick = () => {
+            modal.classList.remove('open');
+        };
+    }
 }
 
-let completedLessonsCount = 0;
-function updateProgressOnComplete() {
+function updateProgressOnComplete(lessonIndex) {
     completedLessonsCount++;
-    document.getElementById('stat-lessons').innerText = completedLessonsCount;
-    const percent = Math.round((completedLessonsCount / curriculum.length) * 100);
-    document.getElementById('stat-progress').innerText = percent + '%';
+    if (lessonIndex >= userProgress) {
+        userProgress = lessonIndex + 1;
+    }
+    
+    const lessonsEl = document.getElementById('stat-lessons');
+    const progressEl = document.getElementById('stat-progress');
+    
+    if (lessonsEl) lessonsEl.innerText = completedLessonsCount;
+    if (progressEl) {
+        const percent = Math.round((userProgress / curriculum.length) * 100);
+        progressEl.innerText = percent + '%';
+    }
+    
+    initDetailedRoadmap();
 }
 
 function initPracticeCards() {
@@ -296,7 +753,7 @@ function initPracticeCards() {
     cards.forEach(card => {
         card.addEventListener('click', () => {
             const type = card.dataset.practice;
-            alert(`Запуск интерактивного режима практики: ${type.toUpperCase()}`);
+            alert(`Интерактивный тренажер режима '${type.toUpperCase()}' активирован! Скоро здесь появится полноценный игровой процесс.`);
         });
     });
 }
@@ -312,18 +769,23 @@ window.handleGoogleLogin = function(response) {
         const payload = JSON.parse(jsonPayload);
         
         const authSection = document.getElementById('auth-section');
-        authSection.innerHTML = `
-            <div style="display:flex; align-items:center; gap: 15px;">
-                <img src="${payload.picture}" alt="avatar" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--success);">
-                <div>
-                    <h3 style="color:var(--success); font-size:1.05rem; margin-bottom:2px;">Синхронизировано</h3>
-                    <p style="font-size:0.8rem; color:var(--text-secondary);">${payload.email}</p>
+        if (authSection) {
+            authSection.innerHTML = `
+                <div style="display:flex; align-items:center; gap: 15px; animation: contentIn 0.3s ease;">
+                    <img src="${payload.picture}" alt="avatar" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--success);">
+                    <div>
+                        <h3 style="color:var(--success); font-size:1.05rem; margin-bottom:2px;">Синхронизировано</h3>
+                        <p style="font-size:0.8rem; color:var(--text-secondary);">${payload.email}</p>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
 
-        document.getElementById('user-name').innerText = payload.name;
-        document.getElementById('profile-avatar').innerHTML = `<img src="${payload.picture}" alt="avatar">`;
+        const userNameEl = document.getElementById('user-name');
+        const profileAvatarEl = document.getElementById('profile-avatar');
+
+        if (userNameEl) userNameEl.innerText = payload.name;
+        if (profileAvatarEl) profileAvatarEl.innerHTML = `<img src="${payload.picture}" alt="avatar">`;
     } catch(e) {
         console.error("Ошибка авторизации:", e);
     }
@@ -332,8 +794,11 @@ window.handleGoogleLogin = function(response) {
 function initMicrophone() {
     const micBtn = document.getElementById('mic-btn');
     const feedbackBox = document.getElementById('voice-feedback');
-    const targetPhrase = document.getElementById('phrase-to-read').innerText;
+    const phraseElement = document.getElementById('phrase-to-read');
     
+    if (!micBtn || !feedbackBox || !phraseElement) return;
+    
+    const targetPhrase = phraseElement.innerText;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
@@ -393,7 +858,7 @@ function initMicrophone() {
         }
 
         feedbackBox.innerHTML = `
-            <div style="font-size: 1.3rem; font-weight: 800; color: ${color}; margin-bottom: 6px;">
+            <div style="font-size: 1.3rem; font-weight: 800; color: ${color}; margin-bottom: 6px; animation: contentIn 0.3s ease;">
                 Точность: ${percentage}%
             </div>
             <div style="font-size: 0.95rem; color: #fff; margin-bottom: 4px;">${statusText}</div>
