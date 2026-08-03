@@ -753,9 +753,138 @@ function initPracticeCards() {
     cards.forEach(card => {
         card.addEventListener('click', () => {
             const type = card.dataset.practice;
-            alert(`Интерактивный тренажер режима '${type.toUpperCase()}' активирован! Скоро здесь появится полноценный игровой процесс.`);
+            openPracticeModal(type);
         });
     });
+}
+
+function openPracticeModal(type) {
+    const modal = document.getElementById('lesson-modal');
+    const body = document.getElementById('lesson-body');
+    const closeModalBtn = document.getElementById('close-modal');
+    
+    if (!modal || !body) return;
+
+    let title = "Тренировка";
+    let contentHTML = "";
+
+    if (type === 'vocabulary') {
+        title = "Словарный запас (Карточки)";
+        contentHTML = `
+            <div>
+                <span class="module-number" style="color: var(--warning);">Интерактив • Словарный тренажер</span>
+                <h3 class="lesson-step-title" style="margin-top: 8px;">Переведите слово:</h3>
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 25px; border-radius: 16px; text-align: center; margin: 20px 0;">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 6px;">Curious</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">Прилагательное</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <button class="practice-ans" data-correct="false" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">Скучный</button>
+                    <button class="practice-ans" data-correct="true" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">Любопытный</button>
+                    <button class="practice-ans" data-correct="false" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">Быстрый</button>
+                </div>
+                <div id="practice-feedback" style="font-weight: 600; min-height: 24px; margin-bottom: 15px;"></div>
+            </div>
+        `;
+    } else if (type === 'listening') {
+        title = "Аудирование (Слушай и выбирай)";
+        contentHTML = `
+            <div>
+                <span class="module-number" style="color: var(--warning);">Интерактив • Аудирование</span>
+                <h3 class="lesson-step-title" style="margin-top: 8px;">Что вы услышали на аудио?</h3>
+                <div style="text-align: center; margin: 25px 0;">
+                    <button id="play-sound-btn" style="background: var(--primary); color: white; border: none; width: 70px; height: 70px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <div style="font-size: 0.850rem; color: var(--text-secondary); margin-top: 10px;">Нажмите, чтобы прослушать фразу</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <button class="practice-ans" data-correct="true" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">How are you doing?</button>
+                    <button class="practice-ans" data-correct="false" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">Who are you?</button>
+                </div>
+                <div id="practice-feedback" style="font-weight: 600; min-height: 24px; margin-bottom: 15px;"></div>
+            </div>
+        `;
+    } else if (type === 'grammar') {
+        title = "Грамматика (Конструктор фраз)";
+        contentHTML = `
+            <div>
+                <span class="module-number" style="color: var(--warning);">Интерактив • Грамматический тест</span>
+                <h3 class="lesson-step-title" style="margin-top: 8px;">Выберите правильный вариант:</h3>
+                <p style="color: #fff; font-weight: 600; margin: 15px 0;">She _____ to the store every single morning.</p>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <button class="practice-ans" data-correct="false" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">go</button>
+                    <button class="practice-ans" data-correct="true" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">goes</button>
+                    <button class="practice-ans" data-correct="false" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">going</button>
+                </div>
+                <div id="practice-feedback" style="font-weight: 600; min-height: 24px; margin-bottom: 15px;"></div>
+            </div>
+        `;
+    } else {
+        title = "Живой Диалог";
+        contentHTML = `
+            <div>
+                <span class="module-number" style="color: var(--warning);">Интерактив • Симуляция диалога</span>
+                <h3 class="lesson-step-title" style="margin-top: 8px;">Ответьте на реплику собеседника:</h3>
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; margin: 15px 0;">
+                    <span style="color: var(--text-secondary); font-size: 0.8rem;">Собеседник:</span>
+                    <p style="color: #fff; font-size: 1rem; margin-top: 4px;">"Hello! Nice to meet you. How is your day going?"</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <button class="practice-ans" data-correct="true" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">"Hi! Everything is great, thank you."</button>
+                    <button class="practice-ans" data-correct="false" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left;">"I am table."</button>
+                </div>
+                <div id="practice-feedback" style="font-weight: 600; min-height: 24px; margin-bottom: 15px;"></div>
+            </div>
+        `;
+    }
+
+    body.innerHTML = contentHTML;
+    modal.classList.add('open');
+
+    const ansButtons = body.querySelectorAll('.practice-ans');
+    const feedback = body.querySelector('#practice-feedback');
+
+    ansButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const isCorrect = btn.dataset.correct === 'true';
+            ansButtons.forEach(b => {
+                b.style.pointerEvents = 'none';
+                if (b.dataset.correct === 'true') {
+                    b.style.background = 'rgba(16, 185, 129, 0.2)';
+                    b.style.borderColor = 'var(--success)';
+                    b.style.color = '#34d399';
+                } else if (b === btn && !isCorrect) {
+                    b.style.background = 'rgba(239, 68, 68, 0.2)';
+                    b.style.borderColor = '#ef4444';
+                    b.style.color = '#f87171';
+                }
+            });
+
+            if (isCorrect) {
+                feedback.innerHTML = `<span style="color: var(--success);"><i class="fa-solid fa-circle-check"></i> Отлично! Ответ верный.</span>`;
+            } else {
+                feedback.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-circle-xmark"></i> Неверно. Правильный вариант выделен зеленым.</span>`;
+            }
+        });
+    });
+
+    const playSoundBtn = body.querySelector('#play-sound-btn');
+    if (playSoundBtn) {
+        playSoundBtn.addEventListener('click', () => {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance("How are you doing?");
+                utterance.lang = 'en-US';
+                window.speechSynthesis.speak(utterance);
+            }
+        });
+    }
+
+    if (closeModalBtn) {
+        closeModalBtn.onclick = () => {
+            modal.classList.remove('open');
+        };
+    }
 }
 
 window.handleGoogleLogin = function(response) {
